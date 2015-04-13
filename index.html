@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>EaselJS demo: Getting started</title>
+        <meta charset="UTF-8">
+	<link href="_shared/demo.css" rel="stylesheet" type="text/css">
+	<script src="http://code.createjs.com/easeljs-0.7.0.min.js"></script>
+	<script>
+            
+            var stage; 
+            var arRight = "صحيح";
+            var arWrong = "خطأ";
+            
+            function createCircle(color,size,x,y,action){
+                
+                   var circle = new createjs.Shape();
+                    circle.graphics.beginFill(color).drawCircle(0, 0, size);
+                    circle.x = x;
+                    circle.y = y;
+                    circle.name = "CR"+color;
+                    
+                    circle.on("click", function() {destroyCircle("CR"+color,action);});
+                    //circle.addEventListener("click", function(event) { alert("clicked"); })    
+                    return circle;
+                
+            }
+            
+            function destroyCircle(index,action){
+               
+               stage.removeChild(stage.getChildByName("stat"));
+               
+               if(action == "right"){
+                stage.removeChild(stage.getChildByName(index));
+                
+                stage.addChild(createText(arRight,250,140,"blue","stat"));
+               }else{
+                   
+                  stage.addChild(createText(arWrong,250,140,"red","stat"));  
+               }
+               
+               stage.update();
+                
+            }
+            
+            
+            function createText(txt,x,y,color,stat){
+               
+                    var text = new createjs.Text(txt, "bold 15px Arial", color);
+                    text.x = x;
+                    text.y = y;
+                    text.name = stat;
+                    
+                    return text;
+            }
+            
+
+           function getRandomInt(min, max) {
+               
+            return Math.floor(Math.random() * (max - min)) + min;
+            
+         }
+
+
+           
+         
+           function init() {
+                    
+                       stage = new createjs.Stage("demoCanvas");
+                       var stageDisc = ["المرحلة الأولى : اختر الألوان الاساسية"];
+                       var colors = ["red","black","green","blue","pink","yellow"];
+                       var action;
+                       
+                        //Stage 1 pick primary color
+                        //
+                    
+                        //stage.addChild(createText(stageDisc[0],300,10,"black"));
+                        document.getElementById("levelName").innerHTML = stageDisc[0];
+                        
+                        for(var i = 0 ; i < colors.length ; i++){
+                         
+                         action = (colors[i] == "red" ||  colors[i] == "green" || colors[i] == "blue") ? "right":"wrong";
+                         stage.addChildAt(createCircle(colors[i],20,getRandomInt(0,495),getRandomInt(0,195),action));
+                        }
+                        
+                    stage.update();    
+		}
+                
+       
+      	
+	</script>
+</head>
+<body onload="init();">
+    
+    <div id="levelName" style="height: 20px;width:500px;text-align: center;font-weight: bold;margin-bottom: 10px"></div>
+    
+	<canvas id="demoCanvas" width="500" height="200">
+		alternate content
+	</canvas>
+</body>
+</html>
