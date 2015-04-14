@@ -10,6 +10,7 @@
             var stage; 
             var arRight = "صحيح";
             var arWrong = "خطأ";
+            var score = 0;
             
             function createCircle(color,size,x,y,action){
                 
@@ -25,20 +26,43 @@
                 
             }
             
+            function createMoveableCircle(color,size){
+                
+                   var circle = new createjs.Shape();
+                   circle.graphics.beginFill(color).drawCircle(0, 0, size);
+                   circle.name = "CR"+color;
+                   return circle;
+                
+            }
+            
             function destroyCircle(index,action){
                
                stage.removeChild(stage.getChildByName("stat"));
                
                if(action == "right"){
+                   
                 stage.removeChild(stage.getChildByName(index));
                 
                 stage.addChild(createText(arRight,250,140,"blue","stat"));
+                
+                score++;
+                
                }else{
                    
                   stage.addChild(createText(arWrong,250,140,"red","stat"));  
                }
                
-               stage.update();
+               if(score < 3){
+                 
+                      stage.update();
+               }else{
+                   
+                   stage.clear();
+                   stage.removeAllChildren();
+                   stage2();
+               }
+               
+             
                 
             }
             
@@ -61,11 +85,33 @@
          }
 
 
+         function createMovable(circle,x,y){
+             
+             
+             var dragger = new createjs.Container();
+	     dragger.x = x;
+             dragger.y = y;
+	     dragger.addChild(circle);
+	     stage.addChild(dragger);
+			
+	     dragger.on("pressmove",function(evt) {
+                 
+		// currentTarget will be the container that the event listener was added to:
+		evt.currentTarget.x = evt.stageX;
+		evt.currentTarget.y = evt.stageY;
+		// make sure to redraw the stage to show the change:
+		stage.update();
+                                
+		});
+             
+             
+         }
            
          
-           function init() {
+           function stage1() {
                     
                        stage = new createjs.Stage("demoCanvas");
+                       createjs.Touch.enable(stage);
                        var stageDisc = ["المرحلة الأولى : اختر الألوان الاساسية"];
                        var colors = ["red","black","green","blue","pink","yellow"];
                        var action;
@@ -86,10 +132,56 @@
 		}
                 
        
+            function stage2(){
+                
+                //stage = new createjs.Stage("demoCanvas");
+                var stageDisc = "المرحلة الثانية";
+                document.getElementById("levelName").innerHTML = stageDisc;
+                stage.mouseMoveOutside = true;
+                
+                createMovable(createMoveableCircle("red",30),50,50);
+                createMovable(createMoveableCircle("blue",30),150,50);
+                createMovable(createMoveableCircle("green",30),250,50);
+                
+                createjs.Ticker.on("tick", tick);
+                
+            }
       	
+             function addHexColor(c1, c2) {
+                 
+                 var hexStr = (parseInt(c1, 16) + parseInt(c2, 16)).toString(16);
+                 while (hexStr.length < 6) { hexStr = '0' + hexStr; } // Zero pad.
+                 return hexStr;
+             }
+             
+             
+             function tick(event) {
+                 
+                 var redBall    = stage.getChildAt(0);
+                 var blueBall   = stage.getChildAt(1);
+                 var greenBall   = stage.getChildAt(2);
+                 var blueBallCr = "0000ff";
+                 var redBallCr  = "ff0000";
+                 var greenBallCr = "00ff00";
+                
+                 //alert(resultColor);
+                 
+                 //var greenBall = stage.getChildByName("CRgreen");
+                 //blueBall.alpha = 0.5;
+                 
+		var pt1 = redBall.localToLocal(0,0,blueBall);
+                var pt2 = redBall.localToLocal(0,0,greenBall);
+                var pt3 = blueBall.localToLocal(0,0,greenBall);
+                
+		if (blueBall.hitTest(pt1.x, pt1.y))  { stage.removeChildAt(3); stage.addChildAt(createCircle("#"+addHexColor(blueBallCr,redBallCr),30,150,150),3); }
+                if (greenBall.hitTest(pt2.x, pt2.y)) { stage.removeChildAt(3); stage.addChildAt(createCircle("#"+addHexColor(greenBallCr,redBallCr),30,150,150),3); }
+                if (greenBall.hitTest(pt3.x, pt3.y)) { stage.removeChildAt(3); stage.addChildAt(createCircle("#"+addHexColor(blueBallCr,greenBallCr),30,150,150),3); }
+			
+			stage.update(event);
+		}
 	</script>
 </head>
-<body onload="init();">
+<body onload="stage1();">
     
     <div id="levelName" style="height: 20px;width:500px;text-align: center;font-weight: bold;margin-bottom: 10px"></div>
     
