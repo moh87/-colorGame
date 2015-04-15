@@ -38,18 +38,20 @@
             function destroyCircle(index,action){
                
                stage.removeChild(stage.getChildByName("stat"));
+               var x = stage.getChildByName(index).x - 5;
+               var y = stage.getChildByName(index).y - 5;
                
                if(action == "right"){
                    
                 stage.removeChild(stage.getChildByName(index));
                 
-                stage.addChild(createText(arRight,250,140,"blue","stat"));
+                //stage.addChild(createText(arRight,x,y,"blue","stat"));
                 
                 score++;
                 
                }else{
                    
-                  stage.addChild(createText(arWrong,250,140,"red","stat"));  
+                  stage.addChild(createText(arWrong,x,y,"red","stat"));  
                }
                
                if(score < 3){
@@ -66,6 +68,16 @@
                 
             }
             
+            function resetGame(){
+                
+                 stage.clear();
+                 stage.removeAllChildren();
+                 stage.removeAllEventListeners();
+                 stage1();
+                 score = 0;
+                
+                
+            }
             
             function createText(txt,x,y,color,stat){
                
@@ -125,7 +137,7 @@
                         for(var i = 0 ; i < colors.length ; i++){
                          
                          action = (colors[i] == "red" ||  colors[i] == "green" || colors[i] == "blue") ? "right":"wrong";
-                         stage.addChildAt(createCircle(colors[i],20,getRandomInt(0,495),getRandomInt(0,195),action));
+                         stage.addChildAt(createCircle(colors[i],30,getRandomInt(20,780),getRandomInt(20,350),action));
                         }
                         
                     stage.update();    
@@ -135,7 +147,7 @@
             function stage2(){
                 
                 //stage = new createjs.Stage("demoCanvas");
-                var stageDisc = "المرحلة الثانية";
+                var stageDisc = "المرحلة الثانية:إمزج الألوان لتحصل على اللون الأصفر";
                 document.getElementById("levelName").innerHTML = stageDisc;
                 stage.mouseMoveOutside = true;
                 
@@ -180,13 +192,94 @@
 			stage.update(event);
 		}
 	</script>
+        
+        <style>
+            
+            body{
+                
+                width:100%;
+                margin:0px;
+                padding:0px;
+                font-family: arial;
+                
+            }
+            
+            #demoCanvas{
+                
+              
+                border: black solid 1px;
+                
+            }
+            
+            #levelName{
+               
+                height: 20px;
+                width:100%;
+                text-align: center;
+                font-weight: bold;
+                margin-bottom: 10px
+                
+            }
+            
+            #mainbar{
+                
+                width:100%;
+                height:50px;
+               
+                background-color: black;
+                color:white;
+                font-weight: bold;
+                font-size: 25px;
+                text-align: center;
+          
+            }
+            
+            #lsidebar{
+                float: left;
+                width:20%;
+                height: 500px;  
+                
+     
+            }
+            
+            #playground{
+                float: left;
+                width:58%;
+                height: 500px;
+                padding-top: 15px;
+                
+ 
+            }
+            
+            #rsidebar{
+                
+                float: left;
+                width:20%;
+                height: 500px;  
+               
+
+                
+            }
+        </style>
 </head>
 <body onload="stage1();">
     
-    <div id="levelName" style="height: 20px;width:500px;text-align: center;font-weight: bold;margin-bottom: 10px"></div>
+   
+   
+    <div id="mainbar">
+   
+      عالم الألوان
+    النسخة التجريبية
     
-	<canvas id="demoCanvas" width="500" height="200">
+    </div>
+    <div id="lsidebar"></div>
+    <div id="playground">
+         <div id="levelName"></div>
+	<canvas id="demoCanvas" width="799" height="400">
 		alternate content
 	</canvas>
+         <button type="button" onClick="resetGame();">البدء من جديد</button>
+   </div>
+    <div id="rsidebar"></div>
 </body>
 </html>
