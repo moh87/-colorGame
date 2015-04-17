@@ -1,16 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>EaselJS demo: Getting started</title>
+	<title>عالم الألوان</title>
         <meta charset="UTF-8">
 	<link href="_shared/demo.css" rel="stylesheet" type="text/css">
-	<script src="http://code.createjs.com/easeljs-0.7.0.min.js"></script>
+	<script src="http://code.createjs.com/easeljs-0.8.0.min.js"></script>
 	<script>
             
             var stage; 
             var arRight = "صحيح";
             var arWrong = "خطأ";
+            var successMsg = [
+                "الألوان الأساسية هي الأحمر و الأخضر و الأزرق",
+               " نمزج اللون الأحمر مع الأخضر لنحصل على اللون الأصفر",
+                "لقد انهيت اللعبة , شكرا لك"
+            ];
             var score = 0;
+            var listener;
+          
+            
+            function start_game(){
+                
+                stage = new createjs.Stage("demoCanvas");
+                stage1();
+                
+            }
             
             function createCircle(color,size,x,y,action){
                 
@@ -59,24 +73,30 @@
                       stage.update();
                }else{
                    
-                   stage.clear();
-                   stage.removeAllChildren();
-                   stage2();
+  
+                   //stage2();
+                   
+                   showSuccess(successMsg[0],"stage2(); hideWind();","إلى المرحلة الثانية");
                }
                
              
                 
             }
             
-            function resetGame(){
-                
+            
+          function init(){
+               
                  stage.clear();
                  stage.removeAllChildren();
-                 stage.removeAllEventListeners();
+                 stage.removeAllEventListeners(); 
+                 score = 0; 
+           }
+           
+           
+            function resetGame(){
+                
+                 init();
                  stage1();
-                 score = 0;
-                
-                
             }
             
             function createText(txt,x,y,color,stat){
@@ -119,10 +139,49 @@
              
          }
            
+   
+           
+           
+           function addImage(loc,posX,posY,scr){
+               
+                 var image = new createjs.Bitmap(loc);
+                 image.x = posX;
+                 image.y = posY; 
+                 
+                 image.on("click", function() { checkImage(scr,posX,posY);});
+                 stage.addChild(image);
+               
+           }
+           
+           
+           function checkImage(scr,x,y){
+               
+               stage.removeChild(stage.getChildByName("stat"));
+               //alert("Got "+scr+" "+x+" "+y);
+               
+               if(scr == 1){
+                   
+                   showSuccess(successMsg[2],"init(); stage1(); hideWind();","إالى المرحلة الأولى");
+                   
+               }else{
+                   
+                  stage.addChild(createText(arWrong,x+55,y+50,"red","stat")); 
+                   
+               }
+               
+               stage.update();
+           }
          
+           function hideWind(){
+               
+                document.getElementById("successWind").style.display = "none";
+           
+           
+           }
+           
+           
            function stage1() {
-                    
-                       stage = new createjs.Stage("demoCanvas");
+                     
                        createjs.Touch.enable(stage);
                        var stageDisc = ["المرحلة الأولى : اختر الألوان الاساسية"];
                        var colors = ["red","black","green","blue","pink","yellow"];
@@ -137,7 +196,7 @@
                         for(var i = 0 ; i < colors.length ; i++){
                          
                          action = (colors[i] == "red" ||  colors[i] == "green" || colors[i] == "blue") ? "right":"wrong";
-                         stage.addChildAt(createCircle(colors[i],30,getRandomInt(20,550),getRandomInt(20,300),action));
+                         stage.addChildAt(createCircle(colors[i],30,getRandomInt(20,780),getRandomInt(20,350),action));
                         }
                         
                     stage.update();    
@@ -147,6 +206,9 @@
             function stage2(){
                 
                 //stage = new createjs.Stage("demoCanvas");
+                
+                init();
+                   
                 var stageDisc = "المرحلة الثانية:إمزج الألوان لتحصل على اللون الأصفر";
                 document.getElementById("levelName").innerHTML = stageDisc;
                 stage.mouseMoveOutside = true;
@@ -155,8 +217,23 @@
                 createMovable(createMoveableCircle("blue",30),150,50);
                 createMovable(createMoveableCircle("green",30),250,50);
                 
-                createjs.Ticker.on("tick", tick);
+               listener = createjs.Ticker.on("tick", tick);
                 
+            }
+            
+            
+            function stage3(){
+                 
+                 init();
+                 
+                 var stageDisc = "المرحلة الثالثة: اختر الصورة اللتي تحتوي على اللون الأحمر";
+                 document.getElementById("levelName").innerHTML = stageDisc;
+            
+                 addImage("images/red.jpg",50,50,1);
+                 addImage("images/green.jpg",270,50,0);
+                 addImage("images/blue.jpg",490,50,0);
+                
+                 stage.update();                
             }
       	
              function addHexColor(c1, c2) {
@@ -186,11 +263,29 @@
                 var pt3 = blueBall.localToLocal(0,0,greenBall);
                 
 		if (blueBall.hitTest(pt1.x, pt1.y))  { stage.removeChildAt(3); stage.addChildAt(createCircle("#"+addHexColor(blueBallCr,redBallCr),30,150,150),3); }
-                if (greenBall.hitTest(pt2.x, pt2.y)) { stage.removeChildAt(3); stage.addChildAt(createCircle("#"+addHexColor(greenBallCr,redBallCr),30,150,150),3); }
+                if (greenBall.hitTest(pt2.x, pt2.y)) { 
+                    
+                   
+                    stage.removeChildAt(3); 
+                    stage.addChildAt(createCircle("#"+addHexColor(greenBallCr,redBallCr),30,150,150),3);
+                    showSuccess(successMsg[1],"stage3(); hideWind();","إلى المرحلة الثالثة");
+                    createjs.Ticker.off("tick", listener);
+                   
+                    
+                }
                 if (greenBall.hitTest(pt3.x, pt3.y)) { stage.removeChildAt(3); stage.addChildAt(createCircle("#"+addHexColor(blueBallCr,greenBallCr),30,150,150),3); }
 			
 			stage.update(event);
 		}
+                
+                
+                function showSuccess(message,stage,stageBtnTxt){
+                  
+                    document.getElementById("msg").innerHTML = message;
+                    document.getElementById("stageBtn").innerHTML = "<button type=\"button\" onClick=\""+stage+"\">"+stageBtnTxt+"</button>";
+                    document.getElementById("successWind").style.display = "block";
+                }
+                
 	</script>
         
         <style>
@@ -200,14 +295,15 @@
                 width:100%;
                 margin:0px;
                 padding:0px;
-                font-family: arial;
-                
+                font-family: arial;    
             }
             
             #demoCanvas{
                 
               
                 border: black solid 1px;
+                background-image: url("images/background.jpg");
+                background-size: 800px 400px;
                 
             }
             
@@ -236,33 +332,68 @@
             
             #lsidebar{
                 float: left;
-                width:20%;
+                width:10%;
                 height: 500px;  
                 
      
             }
             
             #playground{
-                float: left;
-                width:58%;
+               /* float: left;
+               */
+                margin-left: auto;
+                margin-right: auto;
+                width:800px;
                 height: 500px;
                 padding-top: 15px;
+                z-index: 0;
                 
- 
+                
             }
             
             #rsidebar{
                 
                 float: left;
-                width:20%;
-                height: 500px;  
-               
-
+                width:10%;
+                height: 500px;     
+            }
+            
+            #successWind{
+                
+                background-color: white;
+                width: 300px;
+                height: 200px;
+                top:20%;
+                left:40%;
+                position: absolute;
+                z-index: 10;
+                display: none;
+                border:black solid medium;
+                text-align: right;
+                direction: rtl;
+                padding: 0px;
+                margin: 0px;
+            }
+            
+            #successWindTitle{
+                
+              background-color: black;
+              color:white;
+              font-weight: bold;
+              font-size: 20px;
+              text-align: center;  
+              
+            }
+            
+            #msg{
+                
+                padding: 10px;
+                font-size: 15px;
                 
             }
         </style>
 </head>
-<body onload="stage1();">
+<body onload="start_game();">
     
    
    
@@ -272,14 +403,26 @@
     النسخة التجريبية
     
     </div>
-    <div id="lsidebar"></div>
+    <!--<div id="lsidebar"></div>-->
+    
+          <div id="successWind">
+              <div id="successWindTitle">أحسنت</div>
+             <p id="msg"></p>
+             <span id="stageBtn"></span>
+             <button type="button" onClick="resetGame(); hideWind();">البدء من جديد</button>
+         </div>
+    
     <div id="playground">
          <div id="levelName"></div>
-	<canvas id="demoCanvas" width="600" height="400">
+         
+   
+         
+	<canvas id="demoCanvas" width="800" height="400">
 		alternate content
-	</canvas>
-         <button type="button" onClick="resetGame();">البدء من جديد</button>
+	</canvas><br>
+        
+        <button type="button" onClick="resetGame(); hideWind();">البدء من جديد</button>
    </div>
-    <div id="rsidebar"></div>
+   <!-- <div id="rsidebar"></div> -->
 </body>
 </html>
